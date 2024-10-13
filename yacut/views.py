@@ -1,4 +1,4 @@
-from flask import abort, redirect, render_template, request
+from flask import redirect, render_template, request
 
 from . import app
 from .forms import URLMapForm
@@ -23,7 +23,6 @@ def index():
         short_id = get_unique_short_id(short_id)
         if urlmap is not None:
             short_id = urlmap.short
-
         make_data_short_link(original_link, short_id)
 
     return render_template(
@@ -33,7 +32,6 @@ def index():
 
 @app.route('/<string:short_id>')
 def redirect_to_original_link(short_id):
-    urlmap = URLMap.query.filter_by(short=short_id).first()
-    if not urlmap:
-        abort(404)
-    return redirect(urlmap.original)
+    return redirect(
+        URLMap.get_original_link(short=short_id).first_or_404().original
+    )

@@ -24,7 +24,6 @@ def get_unique_short_id(unique_short_id=None, length=DEFAULT_SHORT_ID_LENGTH):
 
 
 def make_data_short_link(original_link, short_link):
-
     if (
         len(short_link) > MAX_SHORT_ID_LENGTH
         or any([x for x in short_link if x in UNSUPPORTED_LETTERS])

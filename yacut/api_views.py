@@ -24,11 +24,13 @@ def make_short_id():
             message=flashed_message.pop(),
         )
 
-    urlmap = make_data_short_link(data['url'], short_id)
     response = jsonify(
         {
-            "url": urlmap.original,
-            "short_link": f'{host}/{urlmap.short}'
+            "url": make_data_short_link(data['url'], short_id).original,
+            "short_link": (
+                f'{host}/'
+                f'{make_data_short_link(data["url"], short_id).short}'
+            )
         }
     ), 201
     return response
@@ -36,7 +38,7 @@ def make_short_id():
 
 @app.route('/api/id/<string:short_id>/', methods=['GET'])
 def get_short_id_url(short_id):
-    urlmap = URLMap.query.filter_by(short=short_id).first()
+    urlmap = URLMap.get_original_link(short=short_id).first()
     if not urlmap:
         raise InvalidAPIUsage(
             message='Указанный id не найден',
