@@ -61,12 +61,12 @@
           </div>
           <div class="col-sm">
             <p class="text-center">
-              {% if short_link %}
+              {% if short_id %}
                 <h5 class="text-center">
                   Ваша новая ссылка готова:
                 </h5>
                 <h5 class="text-center">
-                  <a href={{ short_link }} >{{ short_link }}</a>
+                  <a href="{{ host }}/{{ short_id }}">{{host}}/{{ short_id }}</a>
                 <h5>
               {% endif %}
             </p>

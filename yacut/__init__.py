@@ -13,4 +13,4 @@ app.config['JSON_AS_ASCII'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from . import models, views
+from . import api_views, models, views
