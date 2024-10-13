@@ -1,21 +1,18 @@
 from random import choices
 
-from flask import flash, render_template, jsonify
+from flask import flash
 
 from . import db
 from .constants import (
     SHORT_ID_CHOICES, DEFAULT_SHORT_ID_LENGTH,
-    MAX_SHORT_ID_LENGTH, PREFIX
+    MAX_SHORT_ID_LENGTH
 )
 from .constants import UNSUPPORTED_LETTERS
 from .error_handlers import InvalidAPIUsage
-from .forms import URLMapForm
 from .models import URLMap
 
 
-def get_unique_short_id(
-        unique_short_id=None, length=DEFAULT_SHORT_ID_LENGTH, api=False
-):
+def get_unique_short_id(unique_short_id=None, length=DEFAULT_SHORT_ID_LENGTH):
     if not unique_short_id:
         unique_short_id = ''.join(choices(SHORT_ID_CHOICES, k=length))
     if URLMap.query.filter_by(

@@ -1,9 +1,6 @@
-from random import choices
+from flask import abort, redirect, render_template, request
 
-from flask import abort, flash, redirect, render_template, url_for, request
-
-from . import app, db
-from .constants import DEFAULT_SHORT_ID_LENGTH, PREFIX, SHORT_ID_CHOICES
+from . import app
 from .forms import URLMapForm
 from .models import URLMap
 from .utils import get_unique_short_id, make_data_short_link
