@@ -24,12 +24,12 @@ def index():
         if urlmap is not None:
             short_id = urlmap.short
 
-        if short_id:
-            make_data_short_link(original_link, short_id)
+        make_data_short_link(original_link, short_id)
 
     return render_template(
         'index.html', form=form, short_id=short_id, host=host
     )
+
 
 @app.route('/<string:short_id>')
 def redirect_to_original_link(short_id):
