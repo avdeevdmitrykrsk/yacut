@@ -3,20 +3,25 @@ from flask import get_flashed_messages, jsonify, request
 from . import app
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
-from .utils import get_unique_short_id, make_data_short_link
 
 
 @app.route('/api/id/', methods=['POST'])
 def make_short_id():
     data = request.get_json(silent=True)
+    host = f'{request.scheme}://{request.host}'
+    short_id = None
+
     if data is None:
         raise InvalidAPIUsage('Отсутствует тело запроса')
     if 'url' not in data:
         raise InvalidAPIUsage('"url" является обязательным полем!')
 
-    host = f'{request.scheme}://{request.host}'
-    short_id = data.get('custom_id')
-    short_id = get_unique_short_id(unique_short_id=short_id)
+    if data.get('custom_id'):
+        short_id = data.get('custom_id')
+
+    urlmap = URLMap.validate_and_make(data.get('url'), short_id)
+    if urlmap:
+        short_id = urlmap.short
 
     flashed_message = get_flashed_messages()
     if flashed_message:
@@ -24,21 +29,20 @@ def make_short_id():
             message=flashed_message.pop(),
         )
 
-    response = jsonify(
+    return jsonify(
         {
-            "url": make_data_short_link(data['url'], short_id).original,
+            "url": urlmap.original,
             "short_link": (
                 f'{host}/'
-                f'{make_data_short_link(data["url"], short_id).short}'
+                f'{urlmap.short}'
             )
         }
     ), 201
-    return response
 
 
 @app.route('/api/id/<string:short_id>/', methods=['GET'])
 def get_short_id_url(short_id):
-    urlmap = URLMap.get_original_link(short=short_id).first()
+    urlmap = URLMap.get_urlmap(short=short_id).first()
     if not urlmap:
         raise InvalidAPIUsage(
             message='Указанный id не найден',
