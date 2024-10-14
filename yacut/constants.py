@@ -7,6 +7,12 @@ UNSUPPORTED_LETTERS = (
     punctuation + russian_uppercase + russian_lowercase + whitespace + ' '
 )
 
+# HTTP status codes
+HTTP_OK = 200
+HTTP_CREATED = 201
+HTTP_BAD_REQUEST = 400
+HTTP_NOT_FOUND = 404
+
 # Lenghts
 DEFAULT_SHORT_ID_LENGTH = 6
 MAX_SHORT_ID_LENGTH = 16

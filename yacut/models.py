@@ -37,7 +37,6 @@ class URLMap(db.Model):
     @staticmethod
     def validate_and_make(original, short):
         if short:
-            print(short)
             if (
                 len(short) > DEFAULT_SHORT_ID_LENGTH
                 or not re.match(CUSTOM_ID_REGEX_PATTERN, short)

@@ -1,6 +1,7 @@
 from flask import get_flashed_messages, jsonify, request
 
 from . import app
+from .constants import HTTP_CREATED, HTTP_NOT_FOUND, HTTP_OK
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 
@@ -20,8 +21,6 @@ def make_short_id():
         short_id = data.get('custom_id')
 
     urlmap = URLMap.validate_and_make(data.get('url'), short_id)
-    if urlmap:
-        short_id = urlmap.short
 
     flashed_message = get_flashed_messages()
     if flashed_message:
@@ -37,7 +36,7 @@ def make_short_id():
                 f'{urlmap.short}'
             )
         }
-    ), 201
+    ), HTTP_CREATED
 
 
 @app.route('/api/id/<string:short_id>/', methods=['GET'])
@@ -46,10 +45,10 @@ def get_short_id_url(short_id):
     if not urlmap:
         raise InvalidAPIUsage(
             message='Указанный id не найден',
-            status_code=404
+            status_code=HTTP_NOT_FOUND
         )
     return jsonify(
         {
             "url": urlmap.original
         }
-    ), 200
+    ), HTTP_OK
