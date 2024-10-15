@@ -1,7 +1,7 @@
 from flask import jsonify, render_template
 
 from . import app
-from .constants import HTTP_NOT_FOUND, HTTP_BAD_REQUEST
+from .constants import HTTP_BAD_REQUEST, HTTP_NOT_FOUND
 
 
 class InvalidAPIUsage(Exception):
@@ -15,6 +15,10 @@ class InvalidAPIUsage(Exception):
 
     def to_dict(self):
         return dict(message=self.message)
+
+
+class ValidationError(InvalidAPIUsage):
+    ...
 
 
 @app.errorhandler(InvalidAPIUsage)
