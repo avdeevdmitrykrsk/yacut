@@ -17,8 +17,10 @@ class InvalidAPIUsage(Exception):
         return dict(message=self.message)
 
 
-class ValidationError(InvalidAPIUsage):
-    ...
+class ValidationError(Exception):
+
+    def __init__(self, message):
+        self.message = message
 
 
 @app.errorhandler(InvalidAPIUsage)

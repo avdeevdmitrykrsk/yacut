@@ -4,8 +4,8 @@ from random import choices
 
 from . import db
 from .constants import (
-    ATTEMPTS_STEP, CUSTOM_ID_REGEX_PATTERN, DEFAULT_SHORT_ID_LENGTH,
-    DEFAULT_ATTEMPTS_COUNT, MAX_CUSTOM_ID_LENGTH, MAX_NUMBER_OF_ATTEMPTS,
+    CUSTOM_ID_REGEX_PATTERN, DEFAULT_SHORT_ID_LENGTH,
+    MAX_CUSTOM_ID_LENGTH, MAX_NUMBER_OF_ATTEMPTS,
     MSG_CANT_MAKE_ID, MSG_EMPTY_REQUEST_BODY, MSG_EXPECTED_FIELD_NOT_FOUND_URL,
     MSG_INVALID_SHORT_ID_NAME, MSG_SHORT_ID_ALREADY_EXIST,
     MAX_ORIGINAL_LINK_LENGTH, SHORT_ID_CHOICES
@@ -21,25 +21,20 @@ class URLMap(db.Model):
 
     @staticmethod
     def get_urlmap(original=None, short=None):
-        if short:
-            return URLMap.query.filter_by(short=short)
-        return URLMap.query.filter_by(original=original)
+        return URLMap.query.filter(
+            (original == original) & (short == short)
+            | (original == original)
+            | (short == short)
+        )
 
     @staticmethod
-    def get_unique_short_id(
-        original,
-        length=DEFAULT_SHORT_ID_LENGTH,
-        attempts_count=DEFAULT_ATTEMPTS_COUNT
-    ):
+    def get_unique_short_id(length=DEFAULT_SHORT_ID_LENGTH):
 
-        short = ''.join(choices(SHORT_ID_CHOICES, k=length))
-        if URLMap.get_urlmap(short=short).first() is not None:
-            attempts_count += ATTEMPTS_STEP
-
-            if attempts_count >= MAX_NUMBER_OF_ATTEMPTS:
-                raise ValidationError(MSG_CANT_MAKE_ID)
-            URLMap.get_unique_short_id(original, attempt_count=attempts_count)
-        return short
+        for _ in range(MAX_NUMBER_OF_ATTEMPTS):
+            short = ''.join(choices(SHORT_ID_CHOICES, k=length))
+            if URLMap.get_urlmap(short=short).first() is None:
+                return short
+        raise ValidationError(MSG_CANT_MAKE_ID)
 
     @staticmethod
     def validate_and_make(data, api=False):
@@ -55,7 +50,6 @@ class URLMap(db.Model):
         if 'url' not in data:
             raise ValidationError(MSG_EXPECTED_FIELD_NOT_FOUND_URL)
 
-        short = None
         original = data.get('url')
 
         if data.get('custom_id'):
@@ -70,7 +64,7 @@ class URLMap(db.Model):
                 raise ValidationError(MSG_SHORT_ID_ALREADY_EXIST)
 
         else:
-            short = URLMap.get_unique_short_id(original)
+            short = URLMap.get_unique_short_id()
 
         urlmap = URLMap.get_urlmap(original).first()
         if not urlmap:
