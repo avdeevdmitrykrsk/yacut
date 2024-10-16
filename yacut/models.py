@@ -32,7 +32,7 @@ class URLMap(db.Model):
 
         for _ in range(MAX_NUMBER_OF_ATTEMPTS):
             short = ''.join(choices(SHORT_ID_CHOICES, k=length))
-            if URLMap.get_urlmap(short=short).first() is None:
+            if not URLMap.get_urlmap(short=short).first():
                 return short
         raise ValidationError(MSG_CANT_MAKE_ID)
 
