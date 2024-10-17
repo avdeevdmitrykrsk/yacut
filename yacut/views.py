@@ -16,7 +16,7 @@ def index():
         try:
             short_id = URLMap.validate_and_make(form).short
         except ValidationError as error:
-            flash(error.message)
+            flash(str(error))
 
     return render_template(
         'index.html', form=form, short_id=short_id, host=host

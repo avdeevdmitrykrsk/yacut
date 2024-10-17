@@ -16,7 +16,7 @@ def make_short_id():
     try:
         urlmap = URLMap.validate_and_make(data, api=True)
     except ValidationError as error:
-        raise InvalidAPIUsage(error.message)
+        raise InvalidAPIUsage(str(error))
 
     return jsonify(
         {
